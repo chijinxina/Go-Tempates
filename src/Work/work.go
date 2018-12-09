@@ -1,46 +1,51 @@
+//Work包展示如何使用无缓冲的通道来创建一个gorourine池
+//Work包管理一个goroutine池来管理工作
 package Work
 
 import "sync"
 
-// Worker must be implemented by types that want to use
-// the work pool.
+//Worker接口
 type Worker interface {
 	Task()
 }
 
-// Pool provides a pool of goroutines that can execute any Worker
-// tasks that are submitted.
+//Pool提供一个goroutine池
+//这个池可以完成任何已提交的Worker任务
 type Pool struct {
-	work chan Worker
-	wg   sync.WaitGroup
+	works chan Worker
+	wg    sync.WaitGroup
 }
 
-// New creates a new work pool.
-func New(maxGoroutines int) *Pool {
+//New创建一个新的工作池
+func New(maxGoroutine int) *Pool {
 	p := Pool{
-		work: make(chan Worker),
+		works: make(chan Worker),
 	}
+	p.wg.Add(maxGoroutine)
 
-	p.wg.Add(maxGoroutines)
-	for i := 0; i < maxGoroutines; i++ {
+	//每个协程执行任务
+	for i := 0; i < maxGoroutine; i++ {
 		go func() {
-			for w := range p.work {
+			//for range会一直阻塞循环直到从works通道中接收到一个Worker
+			// 一旦通道被关闭for range就会停止循环
+			for w := range p.works {
+				//执行任务
 				w.Task()
 			}
+			//Done通知任务已完成
 			p.wg.Done()
 		}()
 	}
-
 	return &p
 }
 
-// Run submits work to the pool.
+//Run提交任务到工作池
 func (p *Pool) Run(w Worker) {
-	p.work <- w
+	p.works <- w
 }
 
-// Shutdown waits for all the goroutines to shutdown.
+//Shutdown等待关闭所有goroutine停止工作
 func (p *Pool) Shutdown() {
-	close(p.work)
+	close(p.works)
 	p.wg.Wait()
 }
