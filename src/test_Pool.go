@@ -1,18 +1,18 @@
 package main
 
 import (
+	"Pool"
 	"io"
 	"log"
 	"math/rand"
 	"sync"
 	"sync/atomic"
-	"Pool"
 	"time"
 )
 
 const (
-	maxGoroutines   = 25   //要使用的携程数量
-	pooledResources = 2    //资源池中资源的数量（资源池容量）
+	maxGoroutines   = 25 //要使用的携程数量
+	pooledResources = 2  //资源池中资源的数量（资源池容量）
 )
 
 //dbConnection模拟要共享的资源（数据库连接池）
@@ -22,21 +22,20 @@ type dbConnection struct {
 
 //Close实现了io.Closer接口，以便dbConnection可以被资源池管理
 //Close用来完成任意资源的释放管理
-func (dbConn *dbConnection) Close() error  {
+func (dbConn *dbConnection) Close() error {
 	log.Println("Close: Connection", dbConn.ID)
 	return nil
 }
 
 //idCounter用来给每个数据库连接分配一个独一无二的id
-var idCounter  int32
+var idCounter int32
 
 //createConnection是一个工厂函数，当需要一个新连接时，资源池会调用这个工厂函数构造新的数据库连接
-func createConnection() (io.Closer, error)  {
+func createConnection() (io.Closer, error) {
 	id := atomic.AddInt32(&idCounter, 1)
 	log.Println("Create: New Connection", id)
 	return &dbConnection{id}, nil
 }
-
 
 //main主程序入口
 func main() {
@@ -67,7 +66,7 @@ func main() {
 }
 
 //performQueries用来测试数据库连接
-func performQueries(query int, pool *Pool.Pool)  {
+func performQueries(query int, pool *Pool.Pool) {
 	//从资源池中请求一个数据库连接
 	conn, err := pool.Acquire()
 	if err != nil {
