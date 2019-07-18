@@ -1,0 +1,4 @@
+git checkoout -b chijinxin
+
+
+add 1.txt
