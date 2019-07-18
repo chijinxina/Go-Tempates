@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+//服务端流式grpc
+package serverside.stream;
+
+message MTaskRequest {
+    string agentName = 1;
+}
+
+message MTaskResponse {
+    string task_id = 1;
+}
+
+//定义MTaskService服务
+service MTaskService {
+    //流式响应
+    rpc GetMTask(MTaskRequest) returns (stream MTaskResponse);
+}
