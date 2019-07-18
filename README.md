@@ -1,4 +1,7 @@
 # Go-Tempates
 Go example
 
-git checkout -b chijinxin
+// local master add something
+
+
+remote branch change readme.md by github
