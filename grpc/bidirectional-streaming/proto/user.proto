@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package bidirectional.stream;
+
+message UserRequest{
+    int32 ID = 1;
+}
+message UserResponse{
+    string name = 1;
+    int32  age  = 2;
+}
+
+
+
+service UserService {
+    rpc GetUserInfo(stream UserRequest) returns (stream UserResponse);
+}

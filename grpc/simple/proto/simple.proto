@@ -1,0 +1,17 @@
+syntax = "proto3";
+package simple;
+
+message UserRequest {
+    int32 ID = 1;
+}
+
+message UserResponse{
+    string name = 1;
+    int32 age = 2;
+}
+
+//定义UserService服务
+service UserService {
+    //获取用户信息
+    rpc GetUserInfo(UserRequest) returns (UserResponse);
+}
